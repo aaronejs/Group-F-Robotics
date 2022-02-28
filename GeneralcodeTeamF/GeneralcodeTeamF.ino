@@ -22,7 +22,7 @@
 
 
 const char* ssid = "SAMBA";
-const char* password = "";
+const char* password = "DE JANEIRO";
 
 //Domain name with URL path or IP address with path
 String serverName = "WELITERALLYDONTHAVEONE.";
@@ -36,7 +36,7 @@ unsigned long timerDelay = 10000;
 
 
 //RobotID variable
-String robotID = "4";
+String robotID = "6";
 
 
 
@@ -237,7 +237,7 @@ void rotateToRight(){
 
 
 void httpPost(int setData) {
-  String S = "id=4&data=" + String(setData);
+  String S = "id=6&data=" + String(setData);
   
   //JSONVar myObject = JSON.parse(S);
       HTTPClient http;
@@ -430,6 +430,9 @@ void loop() {
       }
     
   }
+if((strcmp(task, "anything") == 0) || (strcmp(task, "Anything") == 0)){
+    //Added this as an example on how to add a game into the getter code
+}
 
  
 //FOLLOW LINE
