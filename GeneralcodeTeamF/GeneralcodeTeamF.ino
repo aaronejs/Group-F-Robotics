@@ -9,20 +9,31 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-#define MOTOR1A 18 // left wheel forward
-#define MOTOR1B 5 // left wheel reverse
-#define ENA 18
-#define CHA 0
-#define MOTOR2A 17// right wheel forward
-#define MOTOR2B 16// right wheel reverse
-#define ENB 17
-#define CHB 1
-#define LED_BUILTIN 2
+// motor 1 settings
+#define IN1 2
+#define IN2 4
+#define ENA 3 // this pin must be PWM enabled pin
 
+// motor 2 settings
+#define IN3 7
+#define IN4 8
+#define ENB 9 // this pin must be PWM enabled pin
+
+const int CCW = 2; // do not change
+const int CW  = 1; // do not change
+
+#define motor1 1 // do not change
+#define motor2 2 // do not change
+
+// use the line below for single motor
+//Robojax_L298N_DC_motor motor(IN1, IN2, ENA, true);
+
+// use the line below for two motors
+Robojax_L298N_DC_motor motor(IN1, IN2, ENA, IN2, IN3, ENB, true);
 
 
 const char* ssid = "SAMBA";
-const char* password = "DE JANEIRO";
+const char* password = "";
 
 //Domain name with URL path or IP address with path
 String serverName = "WELITERALLYDONTHAVEONE.";
@@ -36,7 +47,7 @@ unsigned long timerDelay = 10000;
 
 
 //RobotID variable
-String robotID = "6";
+String robotID = "4";
 
 
 
@@ -49,8 +60,6 @@ int irPin2 = 39;
 const int digital_pin = 4;
 const int internal_LED = 2;
 const int Speed = 60;
-const int CW = 1;
-const int CCW = 2;
 unsigned long previousMillis = 0;
 unsigned long turningMillis = 0;
 const long interval = 250;
@@ -63,19 +72,16 @@ int ldrValueLeft;
 int ldrValueRight;
 String currentTask = "";
 
-#define motor2 2
-#define motor1 1
-
 
 
 //Oled display
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
 
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins) 
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins
 Adafruit_SSD1306 display = Adafruit_SSD1306(128, 32, &Wire); //for oled display
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();  // for distance sensor
-Robojax_L298N_DC_motor motor(MOTOR1A, MOTOR1B, ENA, CHA, MOTOR2A, MOTOR2B, ENB, CHB);
+
 
 int slotPlayed = 0;
 
@@ -90,10 +96,7 @@ int requestCounter = 1;
 int postCounter = 1;
 int speedPost = 0;
 
-
-
-
-//SETUP AREA
+//Woah, a setup!
 int sendSpeedPost() {
     if (postCounter == 1) {
         return speedPost = random(11,100);
@@ -147,7 +150,7 @@ void setup() {
   Serial.println("Timer set to 2 seconds (timerDelay variable), it will take 2 seconds before publishing the first reading.");
 }
 
-//ALLMOVEMENT
+//Woah! Movement!
 void lineFollow() {
     unsigned long currentMillis = millis();
     
@@ -237,7 +240,7 @@ void rotateToRight(){
 
 
 void httpPost(int setData) {
-  String S = "id=6&data=" + String(setData);
+  String S = "id=4&data=" + String(setData);
   
   //JSONVar myObject = JSON.parse(S);
       HTTPClient http;
@@ -302,8 +305,12 @@ void requestTask(){
 
       requestCounter = 2;
 }
+//WOAH! LOOPS!
 
 void loop() {
+
+//HTTP-Request-On-ID
+ 
   //HTTPS Request For Task Based on robot ID
   if((millis() - lastTime) > timerDelay){
     if(WiFi.status() == WL_CONNECTED){
@@ -320,10 +327,11 @@ void loop() {
   
     ldrValueRight = analogRead(irPin1);
     ldrValueLeft = analogRead(irPin2);
+//Request-Ends-Here
 
 
  
-//MAZE
+//Maze-Code :D
   if((strcmp(task, "maze") == 0) || (strcmp(task, "Maze") == 0)){
     timerDelay = 600000;
     VL53L0X_RangingMeasurementData_t measure;
@@ -430,12 +438,13 @@ void loop() {
       }
     
   }
-if((strcmp(task, "anything") == 0) || (strcmp(task, "Anything") == 0)){
-    //Added this as an example on how to add a game into the getter code
-}
 
- 
-//FOLLOW LINE
+  if(strcmp(task, "anything") == 0 || (strcmp(task, "Anything") == 0)){
+    //fill in code...
+  }
+
+
+//STOP AND FOLLOW
   if((strcmp(task, "idle") == 0) || (strcmp(task, "Idle") == 0)){
       lineFollow();
   }
