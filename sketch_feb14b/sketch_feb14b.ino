@@ -11,7 +11,7 @@ int rForward = 18;
 int rReverse = 5;
 int lForward = 16;
 int lReverse = 17;
-int spd = 180;
+int spd = 195;
 String turn;
 
 // defines pins numbers
@@ -49,12 +49,15 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
+  if (!distSensor.begin()) {
+    Serial.println(F("Failed to boot VL53L0X"));
+    while (1);
+  }
+  
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
 }
 
 void loop() {
-  sensorInfo(3);
-  //dist2();
   maze();
 }
 
@@ -75,133 +78,28 @@ int dist2(){
 }
 
 void maze(){
-    display.setCursor(120, 24);
-
-    drive(1, "brake", 0);
-    if(dist() < 175){
-      drive(1, "brake", 0);
-      delay(250);
-      if(dist2() > 15){
-        analogWrite(lForward, 0);
-        analogWrite(lReverse, 160);
-        analogWrite(rForward, 165);
-        analogWrite(rReverse, 0);
-
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    
+    stopMove();
+    if(dist() < 200){
+      if(dist2() > 20){
+        left();
         display.print("L");
       }else{
-        analogWrite(lForward, 165);
-        analogWrite(lReverse, 0);
-        analogWrite(rForward, 0);
-        analogWrite(rReverse, 160);
+        right();
         display.print("R");
       }
     }else{
-      analogWrite(lForward, 0);
-      analogWrite(lReverse, 165);
-      analogWrite(rForward, 0);
-      analogWrite(rReverse, 165);
+      //delay(25);
+      forward();
       display.print("F");
     }
     display.display();
 }
 
-void maze2(){  
-  timerDelay = 600000;
-  VL53L0X_RangingMeasurementData_t measure;
-  unsigned long currentMillis = millis();
-  unsigned long currentTurningMillis = millis();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0,0);
-    
-  if(currentMillis - previousMillis >= interval){
-    previousMillis = currentMillis;
-  } 
-  if (cycle > 3){
-    currentTurningMillis = millis();
-    if (currentTurningMillis - turningMillis > reverseInterval) {
-      turningMillis = currentTurningMillis;
-      cycle = 1;
-      turnStatus = 0;
-    }
-
-    analogWrite(lForward, 0);
-    analogWrite(lReverse, 155);
-    analogWrite(rForward, 0);
-    analogWrite(rReverse, 180);
-    //motor.rotate(motor1, 40, CCW);
-    //motor.rotate(motor2, 75, CCW);
-//            robot.rotate(motor1, 100, CCW);
-//            robot.rotate(motor2, 0, CW);
-  }else if(dist() <= 275 && turnStatus == 0){//left
-    currentTurningMillis = millis();
-    if (currentTurningMillis - turningMillis > (turningInterval + (cycle * 500))) {
-      turningMillis = currentTurningMillis;
-      turnStatus = 1;
-      cycle += 1;
-    }
-    analogWrite(lForward, 180);
-    analogWrite(lReverse, 0);
-    analogWrite(rForward, 0);
-    analogWrite(rReverse, 180);
-   //motor.rotate(motor1, 0, CW);
-  //  motor.rotate(motor2, 100, CCW);
-    delay(250);
-    analogWrite(lForward, 0);
-    analogWrite(lReverse, 0);
-    analogWrite(rForward, 0);
-    analogWrite(rReverse, 0);
-  //  motor.rotate(motor1, 100, CW);
-  //  motor.rotate(motor2, 100, CW);
-    
-    display.print("Distance (mm): "); display.println(dist());
-    display.println("Turning...left");
-    //delay(100);
-    display.display();
-    display.clearDisplay();
-    //delay(100)
-  }else if(dist() <= 275 && turnStatus == 1){
-    currentTurningMillis = millis();
-    if (currentTurningMillis - turningMillis > (turningInterval + (cycle * 500))) {
-    turningMillis = currentTurningMillis;
-    turnStatus = 0;
-    cycle += 1;
-    }
-    analogWrite(lForward, 0);
-    analogWrite(lReverse, 180);
-    analogWrite(rForward, 180);
-    analogWrite(rReverse, 0);
-  //  motor.rotate(motor1, 100, CCW);
-  //  motor.rotate(motor2, 0, CW);
-    delay(250);
-    analogWrite(lForward, 0);
-    analogWrite(lReverse, 0);
-    analogWrite(rForward, 0);
-    analogWrite(rReverse, 0);
-  //  motor.rotate(motor1, 100, CW);
-  //  motor.rotate(motor2, 100, CW);
-    
-    display.print("Distance (mm): "); display.println(dist());
-    display.println("Turning...right");
-    //delay(100);
-    display.display();
-    display.clearDisplay();
-    //delay(100) 
-  }else{
-    analogWrite(lForward, 0);
-    analogWrite(lReverse, 180);
-    analogWrite(rForward, 0);
-    analogWrite(rReverse, 180);
-  //  motor.rotate(motor1, 60, CW);
-  //  motor.rotate(motor2, 60, CW);
-    display.print("Distance (mm): "); display.println(dist());
-    display.println("VROOM VROOM!");
-    //delay(100);
-    display.display();
-    display.clearDisplay();
-    //delay(100)
-  }
-} 
 
 void lineTracking() {
   display.setCursor(0, 16);
@@ -235,14 +133,43 @@ void lineTracking() {
   display.display();
 }
 
+void forward(){
+  analogWrite(lForward, 0);
+  analogWrite(lReverse, spd);
+  analogWrite(rForward, 0);
+  analogWrite(rReverse, spd);
+}
+void left(){
+  analogWrite(lForward, 0);
+  analogWrite(lReverse, spd);
+  analogWrite(rForward, spd);
+  analogWrite(rReverse, 0);
+}
+void right(){
+  analogWrite(lForward, spd);
+  analogWrite(lReverse, 0);
+  analogWrite(rForward, 0);
+  analogWrite(rReverse, spd);
+}
+void backward(){
+  analogWrite(lForward, spd);
+  analogWrite(lReverse, 0);
+  analogWrite(rForward, spd);
+  analogWrite(rReverse, 0);
+}
+void stopMove(){
+  analogWrite(lForward, 0);
+  analogWrite(lReverse, 0);
+  analogWrite(rForward, 0);
+  analogWrite(rReverse, 0);
+}
+
+
 bool drive(int x, String y, int spd) {
   int z = 180;
   if (x == 1) {
     if (y == "forward") {
-      analogWrite(lForward, spd);
-      analogWrite(lReverse, 0);
-      analogWrite(rForward, spd);
-      analogWrite(rReverse, 0);
+      
     } else if (y == "reverse") {
       analogWrite(lForward, 0);
       analogWrite(lReverse, spd);
@@ -278,25 +205,21 @@ int rColor() {
 }
 
 int dist() {
-  if (!distSensor.begin()) {
-    Serial.println(F("Failed to boot VL53L0X"));
-    while (1);
-  }
-
   VL53L0X_RangingMeasurementData_t measure;
   distSensor.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
   if (measure.RangeStatus != 4) {  // phase failures have incorrect data
     return measure.RangeMilliMeter;
   } else {
-    return -1;
+    return 99999;
   }
 }
 
-void sensorInfo(int x) {
+void sensorInfo() {
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
+  
   display.setCursor(0, 0);
   display.print("R-color: ");
   display.print(rColor());
@@ -306,9 +229,10 @@ void sensorInfo(int x) {
   display.setCursor(0, 16);
   display.print("Dist left: ");
   display.print(dist2());
-  display.setCursor(0, 24);
-  display.print("Dist front: ");
-  display.print(dist());
+  
+  //display.setCursor(0, 24);
+  //display.print("Dist front: ");
+  //display.print(dist());
 
   display.display();
 }
