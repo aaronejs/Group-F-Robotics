@@ -18,28 +18,6 @@ String turn;
 // defines pins numbers
 const int trigPin = 25;
 const int echoPin = 26;
-// defines variables
-long duration;
-int distance;
-
-//
-
-int turnStatus = 0;
-int cycle = 1;
-int state = 0;
-unsigned long timerDelay = 10000;
-
-unsigned long previousMillis = 0;
-unsigned long turningMillis = 0;
-
-const long interval = 250;
-const long turningInterval = 4500;
-const long reverseInterval = 1000;
-//
-
-
-int lArr[10];
-int rArr[10];
 
 void setup() {
   Serial.begin(115200);
