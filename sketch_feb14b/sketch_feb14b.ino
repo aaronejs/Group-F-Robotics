@@ -11,7 +11,8 @@ int rForward = 18;
 int rReverse = 5;
 int lForward = 16;
 int lReverse = 17;
-int spd = 195;
+int spd = 185;
+int turm = 0;
 String turn;
 
 // defines pins numbers
@@ -85,15 +86,18 @@ void maze(){
     
     stopMove();
     if(dist() < 200){
-      if(dist2() > 20){
+      if(dist2() > 21 || turm == 1){
+        turm = 1; 
         left();
         display.print("L");
-      }else{
+      }else if(dist2() < 20 || turm == 2){
+        turm = 2;
         right();
         display.print("R");
       }
     }else{
-      //delay(25);
+      //delay(25) ;
+      turm = 0;
       forward();
       display.print("F");
     }
