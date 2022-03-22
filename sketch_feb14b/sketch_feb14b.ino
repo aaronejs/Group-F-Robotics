@@ -11,10 +11,12 @@ int rForward = 18;
 int rReverse = 5;
 int lForward = 16;
 int lReverse = 17;
-int spd = 185;
+int spd = 160;
 int turm = 0;
 String turn;
 
+long duration;
+int distance;
 // defines pins numbers
 const int trigPin = 25;
 const int echoPin = 26;
@@ -37,7 +39,8 @@ void setup() {
 }
 
 void loop() {
-  maze();
+  //maze();
+  lineTracking();
 }
 
 int dist2(){  
@@ -58,19 +61,21 @@ int dist2(){
 
 void maze(){
     display.clearDisplay();
-    display.setTextSize(1);
+    display.setTextSize(1.5);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0,0);
     
     stopMove();
-    if(dist() < 200){
-      if(dist2() > 21 || turm == 1){
+    if(dist() < 175){
+      if(dist2() > 24 || turm == 1){
         turm = 1; 
         left();
+        delay(25);
         display.print("L");
-      }else if(dist2() < 20 || turm == 2){
+      }else if(dist2() <= 24 || turm == 2){
         turm = 2;
         right();
+        delay(25);
         display.print("R");
       }
     }else{
@@ -79,17 +84,24 @@ void maze(){
       forward();
       display.print("F");
     }
+    display.setCursor(0,8);
+    display.println(dist2());
+    display.setCursor(0,16);
+    display.println(dist());
     display.display();
 }
 
 
 void lineTracking() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 16);
   int x = 100;
   
   if (lColor()-400 > x || rColor() > x) {
     if (abs((lColor()) - rColor()) > 500) {
-      drive(1, "forward", spd);
+      backward();
       display.print("forward");
       if (lColor() > rColor()) {
         turn = "left";
