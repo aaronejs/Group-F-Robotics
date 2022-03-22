@@ -11,7 +11,7 @@ int rForward = 18;
 int rReverse = 5;
 int lForward = 16;
 int lReverse = 17;
-int spd = 150;
+int spd = 185;
 int turm = 0;
 String turn;
 
@@ -101,6 +101,8 @@ void lineTracking() {
   
   if (lColor()-400 > x || rColor() > x) {
     if (abs((lColor()) - rColor()) > 500) {
+      stopMove();
+      delay(20);
       backward();
       display.print("forward");
       if (lColor() > rColor()) {
@@ -109,7 +111,9 @@ void lineTracking() {
         turn = "right";
       }
     } else {
-      drive(1, "forward", spd);
+      stopMove();
+      delay(20);
+      backward();
       display.print("forward SECONDARY");
     }
   }else{
@@ -120,7 +124,9 @@ void lineTracking() {
       drive(1, "right", spd);
       display.print(turn);
     }else{
-      drive(1, "forward", spd);
+      stopMove();
+      delay(20);
+      backward();
       display.print("FORWARD 2");
     }
   }
