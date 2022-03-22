@@ -11,7 +11,7 @@ int rForward = 18;
 int rReverse = 5;
 int lForward = 16;
 int lReverse = 17;
-int spd = 160;
+int spd = 150;
 int turm = 0;
 String turn;
 
@@ -173,10 +173,10 @@ bool drive(int x, String y, int spd) {
       analogWrite(lForward, z);
       analogWrite(lReverse, 0);
       analogWrite(rForward, 0);
-      analogWrite(rReverse, z-10);
+      analogWrite(rReverse, z);
     } else if (y == "left") {
       analogWrite(lForward, 0);
-      analogWrite(lReverse, z-10);
+      analogWrite(lReverse, z);
       analogWrite(rForward, z);
       analogWrite(rReverse, 0);
     } else if (y == "brake") {
