@@ -11,7 +11,8 @@ int rForward = 18;
 int rReverse = 5;
 int lForward = 16;
 int lReverse = 17;
-int spd = 185;
+int spd = 220;
+int mazeSpd = 185;
 int turm = 0;
 String turn;
 
@@ -66,22 +67,22 @@ void maze(){
     display.setCursor(0,0);
     
     stopMove();
-    if(dist() < 175){
-      if(dist2() > 24 || turm == 1){
+    if(dist() < 185){
+      if(dist2() > 26 || turm == 1){
         turm = 1; 
-        left();
-        delay(25);
+        left(mazeSpd);
+        delay(150);
         display.print("L");
-      }else if(dist2() <= 24 || turm == 2){
+      }else if(dist2() <= 26 || turm == 2){
         turm = 2;
-        right();
-        delay(25);
+        right(mazeSpd);
+        delay(150);
         display.print("R");
       }
     }else{
-      //delay(25) ;
+      delay(10) ;
       turm = 0;
-      forward();
+      forward(mazeSpd);
       display.print("F");
     }
     display.setCursor(0,8);
@@ -103,7 +104,7 @@ void lineTracking() {
     if (abs((lColor()) - rColor()) > 500) {
       stopMove();
       delay(20);
-      backward();
+      backward(spd);
       display.print("forward");
       if (lColor() > rColor()) {
         turn = "left";
@@ -113,7 +114,7 @@ void lineTracking() {
     } else {
       stopMove();
       delay(20);
-      backward();
+      backward(spd);
       display.print("forward SECONDARY");
     }
   }else{
@@ -126,35 +127,35 @@ void lineTracking() {
     }else{
       stopMove();
       delay(20);
-      backward();
+      backward(spd);
       display.print("FORWARD 2");
     }
   }
   display.display();
 }
 
-void forward(){
+void forward(int Speed){
   analogWrite(lForward, 0);
-  analogWrite(lReverse, spd);
+  analogWrite(lReverse, Speed);
   analogWrite(rForward, 0);
-  analogWrite(rReverse, spd);
+  analogWrite(rReverse, Speed);
 }
-void left(){
+void left(int Speed){
   analogWrite(lForward, 0);
-  analogWrite(lReverse, spd);
-  analogWrite(rForward, spd);
+  analogWrite(lReverse, Speed+10);
+  analogWrite(rForward, Speed+10);
   analogWrite(rReverse, 0);
 }
-void right(){
-  analogWrite(lForward, spd);
+void right(int Speed){
+  analogWrite(lForward, Speed+10);
   analogWrite(lReverse, 0);
   analogWrite(rForward, 0);
-  analogWrite(rReverse, spd);
+  analogWrite(rReverse, Speed+10);
 }
-void backward(){
-  analogWrite(lForward, spd);
+void backward(int Speed){
+  analogWrite(lForward, Speed);
   analogWrite(lReverse, 0);
-  analogWrite(rForward, spd);
+  analogWrite(rForward, Speed);
   analogWrite(rReverse, 0);
 }
 void stopMove(){
