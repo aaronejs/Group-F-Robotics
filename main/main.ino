@@ -18,13 +18,6 @@ int turm = 0;
 String turn;
 int game;
 
-//
-bool mazeGame = false;
-bool line = false;
-bool Stop = true;
-bool Forward = false;
-//
-
 long duration;
 int distance;
 // defines pins numbers
@@ -78,14 +71,18 @@ void setup() {
 void loop(){
   wifiConn();
 
-  if(mazeGame)
+  if(game == 1)
     maze();
-  else if(line)
+  else if(game == 2)
     lineTracking();
-  else if(Stop)
-    stopMove();
-  else if(Forward)
+  else if(game == 3)
     forward(180);
+  else if(game == 4)
+    left(165);
+  else if(game == 5)
+    right(165);
+  else
+    stopMove();
 }
 
 void wifiConn(){
@@ -125,26 +122,17 @@ void wifiConn(){
 
 void executeCMD(String game){
   if(game == "GET /MAZE"){
-    line = false;  
-    mazeGame = true;
-    Forward = false;
-    Stop = false;
+    game = 1;
   }else if(game == "GET /LINE"){
-    line = true;
-    mazeGame = false;
-    Forward = false;
-    Stop = false;
-  }else if(game == "GET /STOP"){
-    line = false;
-    mazeGame = false;
-    Forward = false;
-    Stop = true;
+    game = 2;
   }else if(game == "GET /FORWARD"){
-    line = false;
-    mazeGame = false;
-    Forward = true;
-    Stop = false;
-  }
+    game = 3;
+  }else if(game == "GET /LEFT"){
+    game = 4;
+  }else if(game == "GET /RIGHT"){
+    game = 5;
+  }else if(game == "GET /STOP"){
+    game = 0;
 }
 
 int dist2(){  
