@@ -1,6 +1,7 @@
 #include "Adafruit_VL53L0X.h"
 #include <analogWrite.h>
 #include <Adafruit_SSD1306.h>
+#include <WiFi.h>
 
 Adafruit_SSD1306 display = Adafruit_SSD1306(128, 32, &Wire);
 Adafruit_VL53L0X distSensor = Adafruit_VL53L0X();
@@ -15,12 +16,26 @@ int spd = 220;
 int mazeSpd = 185;
 int turm = 0;
 String turn;
+int game;
+
+//
+bool mazeGame = false;
+bool line = false;
+bool Stop = true;
+bool Forward = false;
+//
 
 long duration;
 int distance;
 // defines pins numbers
 const int trigPin = 25;
 const int echoPin = 26;
+
+
+const char* ssid     = "aaron";
+const char* password = "12345678";
+
+WiFiServer server(80);
 
 void setup() {
   Serial.begin(115200);
@@ -31,6 +46,27 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
+  // We start by connecting to a WiFi network
+
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected.");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  
+  server.begin();
+
   if (!distSensor.begin()) {
     Serial.println(F("Failed to boot VL53L0X"));
     while (1);
@@ -39,9 +75,76 @@ void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
 }
 
-void loop() {
-  //maze();
-  lineTracking();
+void loop(){
+  wifiConn();
+
+  if(mazeGame)
+    maze();
+  else if(line)
+    lineTracking();
+  else if(Stop)
+    stopMove();
+  else if(Forward)
+    forward(180);
+}
+
+void wifiConn(){
+   WiFiClient client = server.available();   // listen for incoming clients
+
+  if (client) {                             // if you get a client,
+    Serial.println("New Client.");           // print a message out the serial port
+    String currentLine = "";                // make a String to hold incoming data from the client
+    while (client.connected()) {            // loop while the client's connected
+      if (client.available()) {             // if there's bytes to read from the client,
+        char c = client.read();             // read a byte, then
+        Serial.write(c);                    // print it out the serial monitor
+        if (c == '\n') {                    // if the byte is a newline character
+
+          // if the current line is blank, you got two newline characters in a row.
+          // that's the end of the client HTTP request, so send a response:
+          if (currentLine.length() == 0) {
+            break;
+          } else {    // if you got a newline, then clear currentLine:
+            currentLine = "";
+          }
+        } else if (c != '\r') {  // if you got anything else but a carriage return character,
+          currentLine += c;      // add it to the end of the currentLine
+        }
+
+        // Check to see if the client request was "GET /H" or "GET /L":
+
+        executeCMD(currentLine);
+      }
+    }
+
+    // close the connection:
+    client.stop();
+    Serial.println("Client Disconnected.");
+  }
+}
+
+void executeCMD(String game){
+  if(game == "GET /MAZE"){
+    line = false;  
+    mazeGame = true;
+    Forward = false;
+    Stop = false;
+  }else if(game == "GET /LINE"){
+    line = true;
+    mazeGame = false;
+    Forward = false;
+    Stop = false;
+  }else if(game == "GET /STOP"){
+    line = false;
+    mazeGame = false;
+    Forward = false;
+    Stop = true;
+  }else if(game == "GET /FORWARD"){
+    line = false;
+    mazeGame = false;
+    Forward = true;
+    Stop = false;
+  }
 }
 
 int dist2(){  
