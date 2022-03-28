@@ -1,12 +1,12 @@
-
-
 <html>
     <body>
         <form action=<?= htmlentities($_SERVER['PHP_SELF'])?> method="post">
-            <input type="submit" value="FORWARD" name="FORWARD">
             <input type="submit" value="MAZE" name="MAZE">
             <input type="submit" value="LINE" name="LINE">
             <input type="submit" value="RACE" name="RACE">
+            <input type="submit" value="FORWARD" name="FORWARD">
+            <input type="submit" value="LEFT" name="LEFT">
+            <input type="submit" value="RIGHT" name="RIGHT">
             <input type="submit" value="STOP" name="STOP">
         </form>
     </body>
