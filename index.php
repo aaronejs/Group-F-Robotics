@@ -7,6 +7,7 @@
             <input type="submit" value="FORWARD" name="FORWARD">
             <input type="submit" value="LEFT" name="LEFT">
             <input type="submit" value="RIGHT" name="RIGHT">
+            <input type="submit" value="BACKWARD" name="BACKWARD">
             <input type="submit" value="STOP" name="STOP">
         </form>
     </body>

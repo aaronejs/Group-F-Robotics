@@ -16,7 +16,7 @@ int spd = 220;
 int mazeSpd = 185;
 int turm = 0;
 String turn;
-int game;
+int game = 0;
 
 long duration;
 int distance;
@@ -81,6 +81,8 @@ void loop(){
     left(165);
   else if(game == 5)
     right(165);
+  else if(game == 6)
+    backward(165);
   else
     stopMove();
 }
@@ -121,17 +123,19 @@ void wifiConn(){
 }
 
 void executeCMD(String game){
-  if(game == "GET /MAZE"){
+  if(game == "GET /MAZE")
     game = 1;
-  }else if(game == "GET /LINE"){
+  else if(game == "GET /LINE")
     game = 2;
-  }else if(game == "GET /FORWARD"){
+  else if(game == "GET /FORWARD")
     game = 3;
-  }else if(game == "GET /LEFT"){
+  else if(game == "GET /LEFT")
     game = 4;
-  }else if(game == "GET /RIGHT"){
+  else if(game == "GET /RIGHT")
     game = 5;
-  }else if(game == "GET /STOP"){
+  else if(game == "GET /BACKWARD")
+    game = 6;
+  else if(game == "GET /STOP")
     game = 0;
 }
 
