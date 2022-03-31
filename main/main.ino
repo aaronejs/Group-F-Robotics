@@ -76,12 +76,14 @@ void loop(){
   else if(game == 2)
     lineTracking();
   else if(game == 3)
-    forward(180);
+    race();
   else if(game == 4)
-    left(165);
+    forward(180);
   else if(game == 5)
-    right(165);
+    left(165);
   else if(game == 6)
+    right(165);
+  else if(game == 7)
     backward(165);
   else
     stopMove();
@@ -127,14 +129,16 @@ void executeCMD(String str){
     game = 1;
   else if(str == "GET /LINE")
     game = 2;
-  else if(str == "GET /FORWARD")
+  else if(str == "GET /RACE")
     game = 3;
-  else if(str == "GET /LEFT")
+  else if(str == "GET /FORWARD")
     game = 4;
-  else if(str == "GET /RIGHT")
+  else if(str == "GET /LEFT")
     game = 5;
-  else if(str == "GET /BACKWARD")
+  else if(str == "GET /RIGHT")
     game = 6;
+  else if(str == "GET /BACKWARD")
+    game = 7;
   else if(str == "GET /STOP")
     game = 0;
 }
@@ -153,6 +157,44 @@ int dist2(){
   distance = duration * 0.034 / 2;
   // Prints the distance on the Serial Monitor
   return distance;
+}
+
+void race(){
+    display.clearDisplay();
+    display.setTextSize(1.5);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+
+
+    stopMove();
+    if(dist() < 185){
+      if(dist2() > 40 || turm == 1){
+        turm = 1; 
+        left(mazeSpd);
+        delay(150);
+        display.print("L");
+      }else if(dist2() <= 40 || turm == 2){
+        turm = 2;
+        right(mazeSpd);
+        delay(150);
+        display.print("R");
+      }
+    }else{
+      turm = 0;
+      if(rColor() > 2500 || lColor() > 2500){
+        forward(mazeSpd+25);
+        delay(5000);
+      }else{
+        delay(10);
+        forward(mazeSpd);
+        display.print("F");
+      }
+    }
+    display.setCursor(0,8);
+    display.println(dist2());
+    display.setCursor(0,16);
+    display.println(dist());
+    display.display();
 }
 
 void maze(){
