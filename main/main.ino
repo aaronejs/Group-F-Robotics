@@ -122,20 +122,20 @@ void wifiConn(){
   }
 }
 
-void executeCMD(String game){
-  if(game == "GET /MAZE")
+void executeCMD(String str){
+  if(str == "GET /MAZE")
     game = 1;
-  else if(game == "GET /LINE")
+  else if(str == "GET /LINE")
     game = 2;
-  else if(game == "GET /FORWARD")
+  else if(str == "GET /FORWARD")
     game = 3;
-  else if(game == "GET /LEFT")
+  else if(str == "GET /LEFT")
     game = 4;
-  else if(game == "GET /RIGHT")
+  else if(str == "GET /RIGHT")
     game = 5;
-  else if(game == "GET /BACKWARD")
+  else if(str == "GET /BACKWARD")
     game = 6;
-  else if(game == "GET /STOP")
+  else if(str == "GET /STOP")
     game = 0;
 }
 
