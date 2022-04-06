@@ -25,8 +25,8 @@ const int trigPin = 25;
 const int echoPin = 26;
 
 
-const char* ssid     = "aaron";
-const char* password = "12345678";
+const char* ssid     = "BattleBot";
+const char* password = "43638253";
 
 WiFiServer server(80);
 
@@ -49,48 +49,48 @@ void setup() {
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
+    delay(500);
+    Serial.print(".");
   }
 
   Serial.println("");
   Serial.println("WiFi connected.");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  
+
   server.begin();
 
   if (!distSensor.begin()) {
     Serial.println(F("Failed to boot VL53L0X"));
     while (1);
   }
-  
+
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
 }
 
-void loop(){
+void loop() {
   wifiConn();
 
-  if(game == 1)
+  if (game == 1)
     maze();
-  else if(game == 2)
+  else if (game == 2)
     lineTracking();
-  else if(game == 3)
+  else if (game == 3)
     race();
-  else if(game == 4)
+  else if (game == 4)
     forward(180);
-  else if(game == 5)
+  else if (game == 5)
     left(165);
-  else if(game == 6)
+  else if (game == 6)
     right(165);
-  else if(game == 7)
+  else if (game == 7)
     backward(165);
   else
     stopMove();
 }
 
-void wifiConn(){
-   WiFiClient client = server.available();   // listen for incoming clients
+void wifiConn() {
+  WiFiClient client = server.available();   // listen for incoming clients
 
   if (client) {                             // if you get a client,
     Serial.println("New Client.");           // print a message out the serial port
@@ -124,26 +124,27 @@ void wifiConn(){
   }
 }
 
-void executeCMD(String str){
-  if(str == "GET /MAZE")
+void executeCMD(String str) {
+  Serial.println("Get request received");
+  if (str == "GET /Maze")
     game = 1;
-  else if(str == "GET /LINE")
+  else if (str == "GET /LineTrack")
     game = 2;
-  else if(str == "GET /RACE")
+  else if (str == "GET /Race")
     game = 3;
-  else if(str == "GET /FORWARD")
+  else if (str == "GET /Forward")
     game = 4;
-  else if(str == "GET /LEFT")
+  else if (str == "GET /TurnLeft")
     game = 5;
-  else if(str == "GET /RIGHT")
+  else if (str == "GET /TurnRight")
     game = 6;
-  else if(str == "GET /BACKWARD")
+  else if (str == "GET /Back")
     game = 7;
-  else if(str == "GET /STOP")
+  else if (str == "GET /Stop")
     game = 0;
 }
 
-int dist2(){  
+int dist2() {
   // Clears the trigPin
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -159,74 +160,74 @@ int dist2(){
   return distance;
 }
 
-void race(){
-    display.clearDisplay();
-    display.setTextSize(1.5);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
+void race() {
+  display.clearDisplay();
+  display.setTextSize(1.5);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
 
 
-    stopMove();
-    if(dist() < 185){
-      if(dist2() > 40 || turm == 1){
-        turm = 1; 
-        left(mazeSpd);
-        delay(150);
-        display.print("L");
-      }else if(dist2() <= 40 || turm == 2){
-        turm = 2;
-        right(mazeSpd);
-        delay(150);
-        display.print("R");
-      }
-    }else{
-      turm = 0;
-      if(rColor() > 2500 || lColor() > 2500){
-        forward(mazeSpd+25);
-        delay(5000);
-      }else{
-        delay(10);
-        forward(mazeSpd);
-        display.print("F");
-      }
+  stopMove();
+  if (dist() < 185) {
+    if (dist2() > 40 || turm == 1) {
+      turm = 1;
+      left(mazeSpd);
+      delay(150);
+      display.print("L");
+    } else if (dist2() <= 40 || turm == 2) {
+      turm = 2;
+      right(mazeSpd);
+      delay(150);
+      display.print("R");
     }
-    display.setCursor(0,8);
-    display.println(dist2());
-    display.setCursor(0,16);
-    display.println(dist());
-    display.display();
-}
-
-void maze(){
-    display.clearDisplay();
-    display.setTextSize(1.5);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
-    
-    stopMove();
-    if(dist() < 185){
-      if(dist2() > 26 || turm == 1){
-        turm = 1; 
-        left(mazeSpd);
-        delay(150);
-        display.print("L");
-      }else if(dist2() <= 26 || turm == 2){
-        turm = 2;
-        right(mazeSpd);
-        delay(150);
-        display.print("R");
-      }
-    }else{
-      delay(10) ;
-      turm = 0;
+  } else {
+    turm = 0;
+    if (rColor() > 2500 || lColor() > 2500) {
+      forward(mazeSpd + 25);
+      delay(5000);
+    } else {
+      delay(10);
       forward(mazeSpd);
       display.print("F");
     }
-    display.setCursor(0,8);
-    display.println(dist2());
-    display.setCursor(0,16);
-    display.println(dist());
-    display.display();
+  }
+  display.setCursor(0, 8);
+  display.println(dist2());
+  display.setCursor(0, 16);
+  display.println(dist());
+  display.display();
+}
+
+void maze() {
+  display.clearDisplay();
+  display.setTextSize(1.5);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+
+  stopMove();
+  if (dist() < 185) {
+    if (dist2() > 26 || turm == 1) {
+      turm = 1;
+      left(mazeSpd);
+      delay(150);
+      display.print("L");
+    } else if (dist2() <= 26 || turm == 2) {
+      turm = 2;
+      right(mazeSpd);
+      delay(150);
+      display.print("R");
+    }
+  } else {
+    delay(10) ;
+    turm = 0;
+    forward(mazeSpd);
+    display.print("F");
+  }
+  display.setCursor(0, 8);
+  display.println(dist2());
+  display.setCursor(0, 16);
+  display.println(dist());
+  display.display();
 }
 
 
@@ -236,8 +237,8 @@ void lineTracking() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 16);
   int x = 100;
-  
-  if (lColor()-400 > x || rColor() > x) {
+
+  if (lColor() - 400 > x || rColor() > x) {
     if (abs((lColor()) - rColor()) > 500) {
       stopMove();
       delay(20);
@@ -254,14 +255,14 @@ void lineTracking() {
       backward(spd);
       display.print("forward SECONDARY");
     }
-  }else{
-    if(turn == "left"){
+  } else {
+    if (turn == "left") {
       drive(1, "left", spd);
       display.print(turn);
-    }else if (turn == "right") {
+    } else if (turn == "right") {
       drive(1, "right", spd);
       display.print(turn);
-    }else{
+    } else {
       stopMove();
       delay(20);
       backward(spd);
@@ -271,31 +272,31 @@ void lineTracking() {
   display.display();
 }
 
-void forward(int Speed){
+void forward(int Speed) {
   analogWrite(lForward, 0);
   analogWrite(lReverse, Speed);
   analogWrite(rForward, 0);
   analogWrite(rReverse, Speed);
 }
-void left(int Speed){
+void left(int Speed) {
   analogWrite(lForward, 0);
-  analogWrite(lReverse, Speed+10);
-  analogWrite(rForward, Speed+10);
+  analogWrite(lReverse, Speed + 10);
+  analogWrite(rForward, Speed + 10);
   analogWrite(rReverse, 0);
 }
-void right(int Speed){
-  analogWrite(lForward, Speed+10);
+void right(int Speed) {
+  analogWrite(lForward, Speed + 10);
   analogWrite(lReverse, 0);
   analogWrite(rForward, 0);
-  analogWrite(rReverse, Speed+10);
+  analogWrite(rReverse, Speed + 10);
 }
-void backward(int Speed){
+void backward(int Speed) {
   analogWrite(lForward, Speed);
   analogWrite(lReverse, 0);
   analogWrite(rForward, Speed);
   analogWrite(rReverse, 0);
 }
-void stopMove(){
+void stopMove() {
   analogWrite(lForward, 0);
   analogWrite(lReverse, 0);
   analogWrite(rForward, 0);
@@ -307,7 +308,7 @@ bool drive(int x, String y, int spd) {
   int z = 180;
   if (x == 1) {
     if (y == "forward") {
-      
+
     } else if (y == "reverse") {
       analogWrite(lForward, 0);
       analogWrite(lReverse, spd);
@@ -357,7 +358,7 @@ void sensorInfo() {
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
-  
+
   display.setCursor(0, 0);
   display.print("R-color: ");
   display.print(rColor());
@@ -367,7 +368,7 @@ void sensorInfo() {
   display.setCursor(0, 16);
   display.print("Dist left: ");
   display.print(dist2());
-  
+
   //display.setCursor(0, 24);
   //display.print("Dist front: ");
   //display.print(dist());
