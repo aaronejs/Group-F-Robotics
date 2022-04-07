@@ -166,15 +166,14 @@ void race() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
 
-
   stopMove();
   if (dist() < 185) {
-    if (dist2() > 40 || turm == 1) {
+    if (dist2() > 10 || turm == 1) {
       turm = 1;
       left(mazeSpd);
       delay(150);
       display.print("L");
-    } else if (dist2() <= 40 || turm == 2) {
+    } else if (dist2() <= 10 || turm == 2) {
       turm = 2;
       right(mazeSpd);
       delay(150);
@@ -184,7 +183,7 @@ void race() {
     turm = 0;
     if (rColor() > 2500 || lColor() > 2500) {
       forward(mazeSpd + 25);
-      delay(5000);
+      delay(1000);
     } else {
       delay(10);
       forward(mazeSpd);
