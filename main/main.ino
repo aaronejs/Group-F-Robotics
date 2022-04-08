@@ -171,12 +171,12 @@ void race() {
     if (dist2() > 10 || turm == 1) {
       turm = 1;
       left(mazeSpd);
-      delay(150);
+      delay(130);
       display.print("L");
     } else if (dist2() <= 10 || turm == 2) {
       turm = 2;
       right(mazeSpd);
-      delay(150);
+      delay(130);
       display.print("R");
     }
   } else {
